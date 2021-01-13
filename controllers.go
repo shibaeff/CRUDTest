@@ -45,6 +45,10 @@ var (
 	delLogger       = timelogger.NewTimeLogger(delLog, DELETE)
 )
 
+func Test(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("hello")
+}
+
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	createLogger.Start()
 	defer createLogger.End()
@@ -60,7 +64,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("Inserted user")
 	json.NewEncoder(w).Encode(insertResult.InsertedID)
-
 }
 
 func ReadUser(w http.ResponseWriter, r *http.Request) {
