@@ -3,18 +3,21 @@ package main
 import (
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
+	"os"
 )
 
 func main() {
-	route := mux.NewRouter()
-	router := route.PathPrefix("/api").Subrouter()
-	//Routes
-	router.HandleFunc("/test", Test).Methods("GET")
-	router.HandleFunc("/create", CreateUser).Methods("POST")
-	router.HandleFunc("/read", ReadUser).Methods("GET")
-	router.HandleFunc("/update", UpdateUser).Methods("PUT")
-	router.HandleFunc("/delete", DeleteUser).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router)) // Run Server
+	port := os.Getenv("FUNCTIONS_CUSTOMHANDLER_PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
+
+	r := http.NewServeMux()
+	r.HandleFunc("/IncomingHTTP", Test)
+	log.Println("Listening on port:", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
+	//router.HandleFunc("/create", CreateUser).Methods("POST")
+	//router.HandleFunc("/read", ReadUser).Methods("GET")
+	//router.HandleFunc("/update", UpdateUser).Methods("PUT")
+	//router.HandleFunc("/delete", DeleteUser).Methods("DELETE")
 }
