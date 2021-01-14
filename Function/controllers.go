@@ -1,7 +1,6 @@
-package Function
+package main
 
 import (
-	"CRUDTest/Function"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"CRUDTest/Function/pkg/timelogger"
+	"Function/pkg/timelogger"
 )
 
 const (
@@ -37,7 +36,7 @@ type User struct {
 }
 
 var (
-	usersCollection = Function.db().Database("test").Collection("users")
+	usersCollection = db().Database("test").Collection("users")
 	createLogger    = timelogger.NewTimeLogger(createLog, CREATE)
 	readLogger      = timelogger.NewTimeLogger(readLog, READ)
 	updLogger       = timelogger.NewTimeLogger(updLog, UPDATE)

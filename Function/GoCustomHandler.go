@@ -1,7 +1,6 @@
 package main
 
 import (
-	"CRUDTest"
 	"log"
 	"net/http"
 	"os"
@@ -14,7 +13,7 @@ func main() {
 	}
 
 	r := http.NewServeMux()
-	r.HandleFunc("/IncomingHTTP", CRUDTest.Test)
+	r.HandleFunc("/IncomingHTTP", Test)
 	log.Println("Listening on port:", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 	//router.HandleFunc("/create", CreateUser).Methods("POST")

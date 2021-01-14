@@ -1,4 +1,4 @@
-package Function
+package main
 
 import (
 	"context"
