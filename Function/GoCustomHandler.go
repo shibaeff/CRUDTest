@@ -1,23 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
-func main() {
-	port := os.Getenv("FUNCTIONS_CUSTOMHANDLER_PORT")
-	if len(port) == 0 {
-		port = "8080"
+func httpTriggerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("X-Forwarded-For") != "" {
+		w.Write([]byte(strings.Split(r.Header.Get("X-Forwarded-For"), ":")[0]))
+	} else if r.Header.Get("Host") != "" {
+		w.Write([]byte(strings.Split(r.Header.Get("Host"), ":")[0]))
+	} else if r.RemoteAddr != "" {
+		w.Write([]byte(strings.Split(r.RemoteAddr, ":")[0]))
 	}
+}
 
-	r := http.NewServeMux()
-	r.HandleFunc("/httptrigger", Test)
-	log.Println("Listening on port:", port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
-	//router.HandleFunc("/create", CreateUser).Methods("POST")
-	//router.HandleFunc("/read", ReadUser).Methods("GET")
-	//router.HandleFunc("/update", UpdateUser).Methods("PUT")
-	//router.HandleFunc("/delete", DeleteUser).Methods("DELETE")
+func main() {
+	httpInvokerPort, exists := os.LookupEnv("FUNCTIONS_HTTPWORKER_PORT")
+	if exists {
+		fmt.Println("FUNCTIONS_HTTPWORKER_PORT: " + httpInvokerPort)
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/httptrigger", httpTriggerHandler)
+	log.Println("Go server Listening...on httpInvokerPort:", httpInvokerPort)
+	log.Fatal(http.ListenAndServe(":"+httpInvokerPort, mux))
 }
