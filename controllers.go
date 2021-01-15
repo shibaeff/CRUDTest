@@ -39,7 +39,9 @@ var (
 )
 
 func Test(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("hello")
+	start := time.Now()
+	dur := time.Now().Sub(start)
+	json.NewEncoder(w).Encode(dur.Microseconds())
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {

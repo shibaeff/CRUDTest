@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	baseURL = "https://us-central1-pivotal-store-301811.cloudfunctions.net"
+	baseURL = "http://localhost:8000"
 )
 
 type User struct {
@@ -42,7 +42,7 @@ func perFormRequest(err error, r *http.Request) (int64, int64) {
 	res, err := client.Do(r)
 	res.Body.Read(body)
 	d := time.Now().Sub(start)
-	i, err := strconv.Atoi(string(body))
+	i, err := strconv.Atoi(strings.Trim(string(body), "\x00\n"))
 	if err != nil {
 		panic(err)
 	}
