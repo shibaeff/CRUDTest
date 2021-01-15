@@ -1,4 +1,4 @@
-package timelogger
+package functions
 
 import (
 	"log"
@@ -12,9 +12,9 @@ type TimeLogger interface {
 }
 
 type timelogger struct {
-	id      int
-	logFile *os.File
-	logger  *log.Logger
+	id int
+	// logFile *os.File
+	logger *log.Logger
 }
 
 func (t *timelogger) Start() {
@@ -28,8 +28,8 @@ func (t *timelogger) End() {
 func NewTimeLogger(path, prefix string) (tl TimeLogger) {
 	t := &timelogger{}
 	t.id = 0
-	t.logFile, _ = os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	t.logger = log.New(t.logFile, prefix, log.LstdFlags)
+	// t.logFile, _ = os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	t.logger = log.New(os.Stdout, prefix, log.LstdFlags)
 	// defer t.logFile.Close()
 	return t
 }

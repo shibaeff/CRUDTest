@@ -1,4 +1,4 @@
-package main
+package functions
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"Function/pkg/timelogger"
 )
 
 const (
@@ -37,10 +35,10 @@ type User struct {
 
 var (
 	usersCollection = db().Database("test").Collection("users")
-	createLogger    = timelogger.NewTimeLogger(createLog, CREATE)
-	readLogger      = timelogger.NewTimeLogger(readLog, READ)
-	updLogger       = timelogger.NewTimeLogger(updLog, UPDATE)
-	delLogger       = timelogger.NewTimeLogger(delLog, DELETE)
+	createLogger    = NewTimeLogger(createLog, CREATE)
+	readLogger      = NewTimeLogger(readLog, READ)
+	updLogger       = NewTimeLogger(updLog, UPDATE)
+	delLogger       = NewTimeLogger(delLog, DELETE)
 )
 
 func Test(w http.ResponseWriter, r *http.Request) {
