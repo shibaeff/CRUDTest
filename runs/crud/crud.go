@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	baseURL = "http://localhost:8000/api"
+	baseURL = "https://us-central1-pivotal-store-301811.cloudfunctions.net"
 )
 
 type User struct {
@@ -123,7 +123,7 @@ func meanVar(delta, squares, count int64) string {
 }
 
 func main() {
-	count := int64(200)
+	count := int64(10)
 	delta := int64(0)
 	square := int64(0)
 	bar := pb.StartNew(int(count))
