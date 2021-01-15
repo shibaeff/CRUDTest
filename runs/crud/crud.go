@@ -33,7 +33,7 @@ type updateBody struct {
 
 var (
 	client = http.Client{
-		Timeout: time.Second,
+		Timeout: 3 * time.Second,
 	}
 )
 
@@ -130,7 +130,7 @@ func meanVar(delta, squares, count int64) string {
 }
 
 func main() {
-	count := int64(10)
+	count := int64(50)
 	delta := int64(0)
 	square := int64(0)
 	bar := pb.StartNew(int(count))
@@ -168,7 +168,7 @@ func main() {
 		del_sq += d4 * d4
 
 		bar.Increment()
-		time.Sleep(time.Second)
+		// time.Sleep(time.Second)
 	}
 	bar.Finish()
 	fmt.Println("General CRUD")
