@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:e626376fab8608a972d47e91b3c1bbbddaecaf1d42b82be6dcc52d10a7557893"
+  name = "github.com/VividCortex/ewma"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b24eb346a94c3ba12c1da1e564dbac1b498a77ce"
+  version = "v1.1.1"
+
+[[projects]]
   branch = "master"
   digest = "1:a1ca357da2f3338f46f1bea17c3d12bac9844c9ee4f4c946f6e988ceceb0f430"
   name = "github.com/araddon/dateparse"
@@ -36,12 +44,31 @@
   version = "v1.36.23"
 
 [[projects]]
+  digest = "1:a9f7bf27c4a27a0f996fe95043eca423a960c63dce6d9b5a3c5aea8597938beb"
+  name = "github.com/cheggaaa/pb"
+  packages = [
+    "v3",
+    "v3/termutil",
+  ]
+  pruneopts = "UT"
+  revision = "5784bcc95a1741c2ca2b46b19f1f3d398557300c"
+  version = "v3.0.5"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   pruneopts = "UT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:6e6a015e8e8fa80006309826c6129b59341c56103245da051f206b1b3605f0bb"
+  name = "github.com/fatih/color"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bc2269661d49c6c9d0e514eef49710556883f3fa"
+  version = "v1.10.0"
 
 [[projects]]
   digest = "1:586ea76dbd0374d6fb649a91d70d652b7fe0ccffb8910a77468e7702e7901f3d"
@@ -97,6 +124,30 @@
   version = "v1.11.6"
 
 [[projects]]
+  digest = "1:304d25ecc3f4ca39f894c959254d3f5fc6176276ccf1f874ded0cd441e2f964f"
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2e1b0c1546e0173c0907cf05c67b8ba29ed8b4d1"
+  version = "v0.1.8"
+
+[[projects]]
+  digest = "1:0c58d31abe2a2ccb429c559b6292e7df89dcda675456fecc282fa90aa08273eb"
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7b513a986450394f7bbf1476909911b3aa3a55ce"
+  version = "v0.0.12"
+
+[[projects]]
+  digest = "1:48a6af8193acef33a5e96299a9f14822c74ad1c50c3f8aed2467f87e6056d4c9"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "59616a248b91ae20bf3eb93636a24c87d9ce6cea"
+  version = "v0.0.10"
+
+[[projects]]
   digest = "1:9e1d37b58d17113ec3cb5608ac0382313c5b59470b94ed97d0976e69c7022314"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -111,6 +162,14 @@
   pruneopts = "UT"
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  digest = "1:034d31b31cdbbba45de1a14367c75ce3195d7ae908514b8d6142d1525c41955b"
+  name = "github.com/rivo/uniseg"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "75711fccf6a3e85bc74c241e2dddd06a9bc9e53d"
+  version = "v0.2.0"
 
 [[projects]]
   digest = "1:2c8bb9a0858e2ab458c1641345b6eaa3754b7ae453f8d30b15701f8b12b7ead7"
@@ -200,6 +259,17 @@
   revision = "09787c993a3ab68e3d1f5c9b2394ab9433f391be"
 
 [[projects]]
+  branch = "master"
+  digest = "1:cc16b8d9edce3c401e6e9c03e99a82c9747f10691c9a3c0d8bd31fa4a61d4230"
+  name = "golang.org/x/sys"
+  packages = [
+    "internal/unsafeheader",
+    "unix",
+  ]
+  pruneopts = "UT"
+  revision = "4bcb84eeeb78d47aae60461dac79349e427b5349"
+
+[[projects]]
   digest = "1:666e3df74f0c4788cc92426b18e33d93b7b62a3d4e8253f7c4b2226132a0f8de"
   name = "golang.org/x/text"
   packages = [
@@ -227,6 +297,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/araddon/dateparse",
+    "github.com/cheggaaa/pb/v3",
     "github.com/gorilla/mux",
     "github.com/joho/godotenv",
     "github.com/stretchr/testify/assert",
