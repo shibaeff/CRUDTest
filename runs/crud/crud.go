@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -14,7 +15,7 @@ import (
 )
 
 const (
-	baseURL = "https://us-central1-pivotal-store-301811.cloudfunctions.net"
+	baseURL = "http://us-central1-pivotal-store-301811.cloudfunctions.net"
 )
 
 type User struct {
@@ -37,12 +38,18 @@ var (
 )
 
 func perFormRequest(err error, r *http.Request) (int64, int64) {
-	body := make([]byte, 500)
 	start := time.Now()
 	res, err := client.Do(r)
-	res.Body.Read(body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 	d := time.Now().Sub(start)
-	i, err := strconv.Atoi(strings.Trim(string(body), "\x00\n"))
+	trimmed := strings.Trim(string(bodyBytes), "\x00\n")
+	i, err := strconv.Atoi(trimmed)
 	if err != nil {
 		panic(err)
 	}
@@ -135,16 +142,16 @@ func main() {
 		i1_s, i2_s, i3_s, i4_s, i1_k, i2_k, i3_k, i4_k int64
 	)
 	for i := int64(0); i < int64(count); i++ {
-		d1, i1 := sendCreate("/create", i)
+		d1, i1 := sendCreate("/Create", i)
 		i1_s += i1
 		i1_k += i1 * i1
-		d2, i2 := sendRead("/read", i)
+		d2, i2 := sendRead("/Read", i)
 		i2_s += i2
 		i2_k += i2 * i2
-		d3, i3 := sendUpd("/update", i)
+		d3, i3 := sendUpd("/Update", i)
 		i3_s += i3
 		i3_k += i3 * i3
-		d4, i4 := sendDelete("/delete", i)
+		d4, i4 := sendDelete("/Delete", i)
 		i4_s += i4
 		i4_k += i4 * i4
 		sq := d1 + d2 + d3 + d4
