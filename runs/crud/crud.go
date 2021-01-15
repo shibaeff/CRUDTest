@@ -149,6 +149,7 @@ func main() {
 		del_sq += d4 * d4
 
 		bar.Increment()
+		time.Sleep(time.Second)
 	}
 	bar.Finish()
 	fmt.Println("General CRUD")
