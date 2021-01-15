@@ -4,17 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go-master/pkg/timelogger"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"strconv"
-	//"github.com/gorilla/mux"
-	//"go.mongodb.org/mongo-driver/bson"
-	//"go.mongodb.org/mongo-driver/bson/primitive"
-	//"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -39,10 +36,6 @@ type User struct {
 
 var (
 	usersCollection = db().Database("test").Collection("users")
-	createLogger    = timelogger.NewTimeLogger(createLog, CREATE)
-	readLogger      = timelogger.NewTimeLogger(readLog, READ)
-	updLogger       = timelogger.NewTimeLogger(updLog, UPDATE)
-	delLogger       = timelogger.NewTimeLogger(delLog, DELETE)
 )
 
 func Test(w http.ResponseWriter, r *http.Request) {
@@ -50,25 +43,24 @@ func Test(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	createLogger.Start()
-	defer createLogger.End()
+	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		fmt.Print(err)
 	}
-	insertResult, err := usersCollection.InsertOne(context.TODO(), user)
+	_, err = usersCollection.InsertOne(context.TODO(), user)
+	dur := time.Now().Sub(start)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Inserted user")
-	json.NewEncoder(w).Encode(insertResult.InsertedID)
+	json.NewEncoder(w).Encode(dur.Microseconds())
 }
 
 func ReadUser(w http.ResponseWriter, r *http.Request) {
-	readLogger.Start()
-	defer readLogger.End()
+	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -76,15 +68,15 @@ func ReadUser(w http.ResponseWriter, r *http.Request) {
 	}
 	var result User
 	err = usersCollection.FindOne(context.TODO(), bson.D{{"id", _id}}).Decode(&result)
+	dur := time.Now().Sub(start)
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode(result) // returns a Map containing document
+	json.NewEncoder(w).Encode(dur.Microseconds())
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	updLogger.Start()
-	defer updLogger.End()
+	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -120,13 +112,12 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var result primitive.M
 	_ = updateResult.Decode(&result)
-
-	json.NewEncoder(w).Encode(result)
+	dur := time.Now().Sub(start)
+	json.NewEncoder(w).Encode(dur.Microseconds())
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	delLogger.Start()
-	defer delLogger.End()
+	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -134,11 +125,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	opts := options.Delete().SetCollation(&options.Collation{})
 	res, err := usersCollection.DeleteOne(context.TODO(), bson.D{{"id", _id}}, opts)
+	dur := time.Now().Sub(start)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("deleted %v documents\n", res.DeletedCount)
-	json.NewEncoder(w).Encode(res.DeletedCount)
+	json.NewEncoder(w).Encode(dur.Microseconds())
 }
 
 //

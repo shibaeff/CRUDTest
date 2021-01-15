@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -35,7 +36,23 @@ var (
 	}
 )
 
-func sendCreate(postfix string, id int64) (d time.Duration) {
+func perFormRequest(err error, r *http.Request) (int64, int64) {
+	body := make([]byte, 500)
+	start := time.Now()
+	res, err := client.Do(r)
+	res.Body.Read(body)
+	d := time.Now().Sub(start)
+	i, err := strconv.Atoi(string(body))
+	if err != nil {
+		panic(err)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	return d.Microseconds(), int64(i)
+}
+
+func sendCreate(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	person := User{
 		FirstName: "test",
@@ -51,16 +68,11 @@ func sendCreate(postfix string, id int64) (d time.Duration) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	start := time.Now()
-	_, err = client.Do(r)
-	d = time.Now().Sub(start)
-	if err != nil {
-		log.Fatal(err)
-	}
+	d, i = perFormRequest(err, r)
 	return
 }
 
-func sendRead(postfix string, id int64) (d time.Duration) {
+func sendRead(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(""))
 	if err != nil {
@@ -69,16 +81,11 @@ func sendRead(postfix string, id int64) (d time.Duration) {
 	q := r.URL.Query()
 	q.Add("id", fmt.Sprintf("%d", id))
 	r.URL.RawQuery = q.Encode()
-	start := time.Now()
-	_, err = client.Do(r)
-	d = time.Now().Sub(start)
-	if err != nil {
-		log.Fatal(err)
-	}
+	d, i = perFormRequest(err, r)
 	return
 }
 
-func sendUpd(postfix string, id int64) (d time.Duration) {
+func sendUpd(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	var body updateBody
 	body.UserName = "test1"
@@ -90,16 +97,11 @@ func sendUpd(postfix string, id int64) (d time.Duration) {
 	q := r.URL.Query()
 	q.Add("id", fmt.Sprintf("%d", id))
 	r.URL.RawQuery = q.Encode()
-	start := time.Now()
-	_, err = client.Do(r)
-	d = time.Now().Sub(start)
-	if err != nil {
-		log.Fatal(err)
-	}
+	d, i = perFormRequest(err, r)
 	return
 }
 
-func sendDelete(postfix string, id int64) (d time.Duration) {
+func sendDelete(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	r, err := http.NewRequest(http.MethodDelete, url, strings.NewReader(""))
 	if err != nil {
@@ -108,9 +110,7 @@ func sendDelete(postfix string, id int64) (d time.Duration) {
 	q := r.URL.Query()
 	q.Add("id", fmt.Sprintf("%d", id))
 	r.URL.RawQuery = q.Encode()
-	start := time.Now()
-	client.Do(r)
-	d = time.Now().Sub(start)
+	d, i = perFormRequest(err, r)
 	return
 }
 
@@ -130,11 +130,23 @@ func main() {
 	var (
 		create_s, create_sq, read_s, read_sq, upd_s, upd_sq, del_s, del_sq int64
 	)
+	// var i1, i2, i3, i4 int
+	var (
+		i1_s, i2_s, i3_s, i4_s, i1_k, i2_k, i3_k, i4_k int64
+	)
 	for i := int64(0); i < int64(count); i++ {
-		d1 := sendCreate("/create", i).Microseconds()
-		d2 := sendRead("/read", i).Microseconds()
-		d3 := sendUpd("/update", i).Microseconds()
-		d4 := sendDelete("/delete", i).Microseconds()
+		d1, i1 := sendCreate("/create", i)
+		i1_s += i1
+		i1_k += i1 * i1
+		d2, i2 := sendRead("/read", i)
+		i2_s += i2
+		i2_k += i2 * i2
+		d3, i3 := sendUpd("/update", i)
+		i3_s += i3
+		i3_k += i3 * i3
+		d4, i4 := sendDelete("/delete", i)
+		i4_s += i4
+		i4_k += i4 * i4
 		sq := d1 + d2 + d3 + d4
 		delta += sq
 		square += sq * sq
@@ -154,12 +166,28 @@ func main() {
 	bar.Finish()
 	fmt.Println("General CRUD")
 	fmt.Println(meanVar(delta, square, count))
+
 	fmt.Println("CREATE")
 	fmt.Println(meanVar(create_s, create_sq, count))
+
+	fmt.Println("CREATE Internal")
+	fmt.Println(meanVar(i1_s, i1_k, count))
+
 	fmt.Println("READ")
 	fmt.Println(meanVar(read_s, read_sq, count))
+
+	fmt.Println("READ Internal")
+	fmt.Println(meanVar(i2_s, i2_k, count))
+
 	fmt.Println("UPDATE")
 	fmt.Println(meanVar(upd_s, upd_sq, count))
+
+	fmt.Println("UPDATE Internal")
+	fmt.Println(meanVar(i3_s, i3_k, count))
+
 	fmt.Println("DELETE")
 	fmt.Println(meanVar(del_s, del_sq, count))
+
+	fmt.Println("DELETE Internal")
+	fmt.Println(meanVar(i4_s, i4_k, count))
 }
