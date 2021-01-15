@@ -41,7 +41,7 @@ var (
 func Test(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	dur := time.Now().Sub(start)
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	json.NewEncoder(w).Encode(dur.Nanoseconds() / 1000)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +58,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Println("Inserted user")
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	json.NewEncoder(w).Encode(dur.Nanoseconds() / 1000)
 }
 
 func ReadUser(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func ReadUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	json.NewEncoder(w).Encode(dur.Nanoseconds() / 1000)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +115,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var result primitive.M
 	_ = updateResult.Decode(&result)
 	dur := time.Now().Sub(start)
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	json.NewEncoder(w).Encode(dur.Nanoseconds() / 1000)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +132,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Printf("deleted %v documents\n", res.DeletedCount)
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	json.NewEncoder(w).Encode(dur.Nanoseconds() / 1000)
 }
 
 //
