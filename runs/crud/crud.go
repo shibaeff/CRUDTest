@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	baseURL = "http://localhost:8000"
+	baseURL = "https://us-central1-pivotal-store-301811.cloudfunctions.net"
 )
 
 type User struct {
