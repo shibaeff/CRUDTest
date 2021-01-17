@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
@@ -71,7 +70,7 @@ func sendCreate(postfix string, id int64) (d int64, i int64) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(json_str)))
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,42 +80,54 @@ func sendCreate(postfix string, id int64) (d int64, i int64) {
 
 func sendRead(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(""))
+	person := User{
+		FirstName: "test",
+		LastName:  "test",
+		UserName:  "test",
+		Id:        id,
+	}
+	json_str, err := json.Marshal(person)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
+	if err != nil {
+		log.Fatal(err)
+	}
 	d, i = perFormRequest(err, r)
 	return
 }
 
 func sendUpd(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	var body updateBody
-	body.UserName = "test1"
-	update_body, err := json.Marshal(body)
-	r, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(update_body))
+	person := User{
+		FirstName: "test1",
+		LastName:  "test1",
+		UserName:  "test1",
+		Id:        id,
+	}
+	json_str, err := json.Marshal(person)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	d, i = perFormRequest(err, r)
 	return
 }
 
 func sendDelete(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	r, err := http.NewRequest(http.MethodDelete, url, strings.NewReader(""))
+	person := User{
+		FirstName: "test",
+		LastName:  "test",
+		UserName:  "test",
+		Id:        id,
+	}
+	json_str, err := json.Marshal(person)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	d, i = perFormRequest(err, r)
 	return
 }
