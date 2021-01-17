@@ -110,10 +110,10 @@ func sendRead(postfix string, id int64) (d int64, i int64) {
 func sendUpd(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	person := User{
-		FirstName: "test1",
-		LastName:  "test1",
-		UserName:  "test1",
-		Id:        id,
+		//FirstName: "test1",
+		//LastName:  "test1",
+		UserName: "test1",
+		Id:       id,
 	}
 	json_str, err := json.Marshal(person)
 	if err != nil {
@@ -163,12 +163,13 @@ func main() {
 	)
 	for i := int64(0); i < int64(count); i++ {
 		d1, i1 := sendCreate("/create", i)
+		sendDelete("/delete", i)
 		i1_s += i1
 		i1_k += i1 * i1
 		d2, i2 := sendRead("/read", i)
 		i2_s += i2
 		i2_k += i2 * i2
-		d3, i3 := sendUpd("/update", i)
+		d3, i3 := sendCreate("/create", i)
 		i3_s += i3
 		i3_k += i3 * i3
 		d4, i4 := sendDelete("/delete", i)
