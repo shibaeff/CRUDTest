@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"time"
 
@@ -38,8 +39,12 @@ func db() *mongo.Client {
 }
 
 var (
-	usersCollection = db().Database("test").Collection("users")
+	usersCollection *mongo.Collection
 )
+
+func init() {
+	usersCollection = db().Database("test").Collection("users")
+}
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
 // AWS Lambda Proxy Request functionality (default behavior)
@@ -56,8 +61,24 @@ type User struct {
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(user User) (Response, error) {
+
+	var update bson.D
+	if user.UserName != "" {
+		update = bson.D{{"$set", bson.D{{"username", user.UserName}}}}
+	}
+	if user.FirstName != "" {
+		update.Map()["firstname"] = user.FirstName
+	}
+	if user.LastName != "" {
+		update.Map()["lastname"] = user.LastName
+	}
+
 	start := time.Now()
+	_, err := usersCollection.UpdateOne(context.TODO(), bson.D{{"id", user.Id}}, update)
 	dur := time.Now().Sub(start)
+	if err != nil {
+		log.Fatal(err)
+	}
 	var buf bytes.Buffer
 	body, err := json.Marshal(map[string]interface{}{
 		"dur": fmt.Sprintf("%d", dur.Nanoseconds()/1000),
@@ -66,7 +87,7 @@ func Handler(user User) (Response, error) {
 		return Response{StatusCode: 404}, err
 	}
 	json.HTMLEscape(&buf, body)
-
+	log.Println("Inserted user")
 	resp := Response{
 		StatusCode:      200,
 		IsBase64Encoded: false,
@@ -76,7 +97,6 @@ func Handler(user User) (Response, error) {
 			"X-MyCompany-Func-Reply": "test-handler",
 		},
 	}
-
 	return resp, nil
 }
 
