@@ -8,13 +8,12 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	baseURL = "http://us-central1-pivotal-store-301811.cloudfunctions.net"
+	baseURL = "https://ldpishoop6.execute-api.us-east-1.amazonaws.com/delete"
 )
 
 type User struct {
@@ -47,15 +46,20 @@ func perFormRequest(err error, r *http.Request) (int64, int64) {
 		log.Fatal(err)
 	}
 	d := time.Now().Sub(start)
-	trimmed := strings.Trim(string(bodyBytes), "\x00\n")
-	i, err := strconv.Atoi(trimmed)
+	type duration struct {
+		dur int64
+	}
+	var dur duration
+	if err = json.Unmarshal(bodyBytes, &dur); err != nil {
+		log.Fatal(err)
+	}
 	if err != nil {
 		panic(err)
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
-	return d.Microseconds(), int64(i)
+	return d.Microseconds(), dur.dur
 }
 
 func sendCreate(postfix string, id int64) (d int64, i int64) {
