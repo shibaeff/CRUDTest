@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	baseURL = "https://ldpishoop6.execute-api.us-east-1.amazonaws.com/delete"
+	baseURL = "https://ldpishoop6.execute-api.us-east-1.amazonaws.com"
 )
 
 type User struct {
@@ -145,7 +145,7 @@ func meanVar(delta, squares, count int64) string {
 }
 
 func main() {
-	count := int64(50)
+	count := int64(5)
 	delta := int64(0)
 	square := int64(0)
 	bar := pb.StartNew(int(count))
@@ -157,16 +157,16 @@ func main() {
 		i1_s, i2_s, i3_s, i4_s, i1_k, i2_k, i3_k, i4_k int64
 	)
 	for i := int64(0); i < int64(count); i++ {
-		d1, i1 := sendCreate("/Create", i)
+		d1, i1 := sendCreate("/create", i)
 		i1_s += i1
 		i1_k += i1 * i1
-		d2, i2 := sendRead("/Read", i)
+		d2, i2 := sendRead("/read", i)
 		i2_s += i2
 		i2_k += i2 * i2
-		d3, i3 := sendUpd("/Update", i)
+		d3, i3 := sendUpd("/update", i)
 		i3_s += i3
 		i3_k += i3 * i3
-		d4, i4 := sendDelete("/Delete", i)
+		d4, i4 := sendDelete("/delete", i)
 		i4_s += i4
 		i4_k += i4 * i4
 		sq := d1 + d2 + d3 + d4
