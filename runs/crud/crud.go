@@ -150,7 +150,7 @@ func meanVar(delta, squares, count int64) string {
 }
 
 func main() {
-	count := int64(5)
+	count := int64(50)
 	delta := int64(0)
 	square := int64(0)
 	bar := pb.StartNew(int(count))
