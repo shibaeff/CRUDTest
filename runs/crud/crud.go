@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
+	"github.com/joho/godotenv"
 	"log"
 	"math"
 	"net/http"
-	"strconv"
+	"os"
 	"strings"
 	"time"
 )
 
-const (
-	baseURL = "https://us-central1-pivotal-store-301811.cloudfunctions.net"
+var (
+	baseURL = ""
 )
 
 type User struct {
@@ -36,20 +37,25 @@ var (
 	}
 )
 
+type Return struct {
+	Dur int64 `json:"dur"`
+}
+
 func perFormRequest(err error, r *http.Request) (int64, int64) {
 	body := make([]byte, 500)
 	start := time.Now()
 	res, err := client.Do(r)
+	var ret Return
 	res.Body.Read(body)
+	json.Unmarshal(body, &ret)
 	d := time.Now().Sub(start)
-	i, err := strconv.Atoi(string(body))
 	if err != nil {
 		panic(err)
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
-	return d.Microseconds(), int64(i)
+	return d.Microseconds(), ret.Dur
 }
 
 func sendCreate(postfix string, id int64) (d int64, i int64) {
@@ -64,7 +70,7 @@ func sendCreate(postfix string, id int64) (d int64, i int64) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(json_str)))
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -90,7 +96,7 @@ func sendUpd(postfix string, id int64) (d int64, i int64) {
 	var body updateBody
 	body.UserName = "test1"
 	update_body, err := json.Marshal(body)
-	r, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(update_body))
+	r, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(update_body))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,7 +109,7 @@ func sendUpd(postfix string, id int64) (d int64, i int64) {
 
 func sendDelete(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	r, err := http.NewRequest(http.MethodDelete, url, strings.NewReader(""))
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(""))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -123,6 +129,11 @@ func meanVar(delta, squares, count int64) string {
 }
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+	baseURL = os.Getenv("BASE")
 	count := int64(10)
 	delta := int64(0)
 	square := int64(0)
