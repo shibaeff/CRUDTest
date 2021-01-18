@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	baseURL = "https://function-ckn5zrqpjsuw4.azurewebsites.net/api/httptrigger"
+	baseURL = "https://ldpishoop6.execute-api.us-east-1.amazonaws.com/test"
 )
 
 func meanVar(delta, squares, count int64) string {
@@ -21,7 +21,7 @@ func meanVar(delta, squares, count int64) string {
 
 func main() {
 	s, sq := int64(0), int64(0)
-	count := int64(10)
+	count := int64(100)
 	for i := int64(0); i < count; i++ {
 		start := time.Now()
 		http.Get(baseURL)
