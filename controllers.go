@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -72,12 +71,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 func ReadUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
-	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
 	}
 	var result User
-	err = usersCollection.FindOne(context.TODO(), bson.D{{"id", _id}}).Decode(&result)
+	err = usersCollection.FindOne(context.TODO(), bson.D{{"id", user.Id}}).Decode(&result)
 	dur := time.Now().Sub(start)
 	if err != nil {
 		log.Fatal(err)
@@ -90,35 +90,26 @@ func ReadUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
-	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
 	}
-	type updateBody struct {
-		FirstName string `json:"firstname"`
-		LastName  string `json:"lastname"`
-		UserName  string `json:"username"`
-	}
-	var body updateBody
-	err = json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	filter := bson.D{{"id", _id}}
+	filter := bson.D{{"id", user.Id}}
 	after := options.After
 	returnOpt := options.FindOneAndUpdateOptions{
 
 		ReturnDocument: &after,
 	}
 	var update bson.D
-	if body.UserName != "" {
-		update = bson.D{{"$set", bson.D{{"username", body.UserName}}}}
+	if user.UserName != "" {
+		update = bson.D{{"$set", bson.D{{"username", user.UserName}}}}
 	}
-	if body.FirstName != "" {
-		update.Map()["firstname"] = body.FirstName
+	if user.FirstName != "" {
+		update.Map()["firstname"] = user.FirstName
 	}
-	if body.LastName != "" {
-		update.Map()["lastname"] = body.LastName
+	if user.LastName != "" {
+		update.Map()["lastname"] = user.LastName
 	}
 	updateResult := usersCollection.FindOneAndUpdate(context.TODO(), filter, update, &returnOpt)
 
@@ -133,12 +124,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
-	_id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
 	}
 	opts := options.Delete().SetCollation(&options.Collation{})
-	res, err := usersCollection.DeleteOne(context.TODO(), bson.D{{"id", _id}}, opts)
+	res, err := usersCollection.DeleteOne(context.TODO(), bson.D{{"id", user.Id}}, opts)
 	dur := time.Now().Sub(start)
 	if err != nil {
 		log.Fatal(err)
