@@ -1,15 +1,16 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/joho/godotenv"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -33,32 +34,62 @@ type updateBody struct {
 
 var (
 	client = http.Client{
-		Timeout: time.Second,
+		Timeout: 3 * time.Second,
 	}
 )
 
-type Return struct {
-	Dur int64 `json:"dur"`
-}
-
 func perFormRequest(err error, r *http.Request) (int64, int64) {
-	body := make([]byte, 500)
 	start := time.Now()
 	res, err := client.Do(r)
-	var ret Return
-	res.Body.Read(body)
-	json.Unmarshal(body, &ret)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 	d := time.Now().Sub(start)
+	type duration struct {
+		Dur string `json:"dur"`
+	}
+	var dur duration
+	if err = json.Unmarshal(bodyBytes, &dur); err != nil {
+		log.Fatal(err)
+	}
 	if err != nil {
 		panic(err)
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
-	return d.Microseconds(), ret.Dur
+	i, err := strconv.Atoi(dur.Dur)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return d.Microseconds(), int64(i)
 }
 
 func sendCreate(postfix string, id int64) (d int64, i int64) {
+	url := baseURL + postfix
+	person := User{
+		//FirstName: "test",
+		//LastName:  "test",
+		//UserName:  "test",
+		Id: id,
+	}
+	json_str, err := json.Marshal(person)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
+	if err != nil {
+		log.Fatal(err)
+	}
+	d, i = perFormRequest(err, r)
+	return
+}
+
+func sendRead(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
 	person := User{
 		FirstName: "test",
@@ -78,44 +109,36 @@ func sendCreate(postfix string, id int64) (d int64, i int64) {
 	return
 }
 
-func sendRead(postfix string, id int64) (d int64, i int64) {
-	url := baseURL + postfix
-	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(""))
-	if err != nil {
-		log.Fatal(err)
-	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
-	d, i = perFormRequest(err, r)
-	return
-}
-
 func sendUpd(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	var body updateBody
-	body.UserName = "test1"
-	update_body, err := json.Marshal(body)
-	r, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(update_body))
+	person := User{
+		//FirstName: "test1",
+		//LastName:  "test1",
+		UserName: "test1",
+		Id:       id,
+	}
+	json_str, err := json.Marshal(person)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	d, i = perFormRequest(err, r)
 	return
 }
 
 func sendDelete(postfix string, id int64) (d int64, i int64) {
 	url := baseURL + postfix
-	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(""))
+	person := User{
+		FirstName: "test",
+		LastName:  "test",
+		UserName:  "test",
+		Id:        id,
+	}
+	json_str, err := json.Marshal(person)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := r.URL.Query()
-	q.Add("id", fmt.Sprintf("%d", id))
-	r.URL.RawQuery = q.Encode()
+	r, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(json_str)))
 	d, i = perFormRequest(err, r)
 	return
 }
@@ -134,7 +157,7 @@ func main() {
 		panic(err)
 	}
 	baseURL = os.Getenv("BASE")
-	count := int64(10)
+	count := int64(50)
 	delta := int64(0)
 	square := int64(0)
 	bar := pb.StartNew(int(count))
@@ -147,12 +170,13 @@ func main() {
 	)
 	for i := int64(0); i < int64(count); i++ {
 		d1, i1 := sendCreate("/create", i)
+		sendDelete("/delete", i)
 		i1_s += i1
 		i1_k += i1 * i1
 		d2, i2 := sendRead("/read", i)
 		i2_s += i2
 		i2_k += i2 * i2
-		d3, i3 := sendUpd("/update", i)
+		d3, i3 := sendCreate("/create", i)
 		i3_s += i3
 		i3_k += i3 * i3
 		d4, i4 := sendDelete("/delete", i)
@@ -172,7 +196,7 @@ func main() {
 		del_sq += d4 * d4
 
 		bar.Increment()
-		time.Sleep(time.Second)
+		// time.Sleep(time.Second)
 	}
 	bar.Finish()
 	fmt.Println("General CRUD")
