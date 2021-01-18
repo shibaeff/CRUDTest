@@ -1,0 +1,1 @@
+hey -n 10000 -c 100 -q 1000 -D ./body.json -o csv  $BASE/read > ./csv/$1/read.csv

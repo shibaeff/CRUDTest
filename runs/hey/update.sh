@@ -1,0 +1,1 @@
+hey -n 10000 -c 100 -q 1000  -D ./upd.json -o csv  $BASE/update > ./csv/$1/update.csv
