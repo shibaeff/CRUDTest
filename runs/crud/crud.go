@@ -10,7 +10,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -50,7 +49,7 @@ func perFormRequest(err error, r *http.Request) (int64, int64) {
 	}
 	d := time.Now().Sub(start)
 	type duration struct {
-		Dur string `json:"dur"`
+		Dur int64 `json:"dur"`
 	}
 	var dur duration
 	if err = json.Unmarshal(bodyBytes, &dur); err != nil {
@@ -62,11 +61,11 @@ func perFormRequest(err error, r *http.Request) (int64, int64) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	i, err := strconv.Atoi(dur.Dur)
+	// i, err := strconv.Atoi(dur.Dur)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return d.Microseconds(), int64(i)
+	return d.Microseconds(), dur.Dur
 }
 
 func sendCreate(postfix string, id int64) (d int64, i int64) {

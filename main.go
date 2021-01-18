@@ -12,9 +12,9 @@ func main() {
 	router := route.PathPrefix("/api").Subrouter()
 	//Routes
 	router.HandleFunc("/test", Test).Methods("GET")
-	router.HandleFunc("/create", CreateUser).Methods("POST")
+	router.HandleFunc("/create", CreateUser).Methods("GET")
 	router.HandleFunc("/read", ReadUser).Methods("GET")
-	router.HandleFunc("/update", UpdateUser).Methods("PUT")
-	router.HandleFunc("/delete", DeleteUser).Methods("DELETE")
+	router.HandleFunc("/update", UpdateUser).Methods("GET")
+	router.HandleFunc("/delete", DeleteUser).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router)) // Run Server
 }
