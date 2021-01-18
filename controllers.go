@@ -34,6 +34,10 @@ type User struct {
 	Id        int64  `json:"id"`
 }
 
+type Return struct {
+	Dur int64 `json:"dur"`
+}
+
 var (
 	usersCollection = db().Database("test").Collection("users")
 )
@@ -56,7 +60,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Println("Inserted user")
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	var ret Return
+	ret.Dur = dur.Microseconds()
+	json.NewEncoder(w).Encode(ret)
 }
 
 func ReadUser(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +78,9 @@ func ReadUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	var ret Return
+	ret.Dur = dur.Microseconds()
+	json.NewEncoder(w).Encode(ret)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +121,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var result primitive.M
 	_ = updateResult.Decode(&result)
 	dur := time.Now().Sub(start)
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	var ret Return
+	ret.Dur = dur.Microseconds()
+	json.NewEncoder(w).Encode(ret)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +140,9 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Printf("deleted %v documents\n", res.DeletedCount)
-	json.NewEncoder(w).Encode(dur.Microseconds())
+	var ret Return
+	ret.Dur = dur.Microseconds()
+	json.NewEncoder(w).Encode(ret)
 }
 
 //
