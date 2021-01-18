@@ -11,9 +11,7 @@ import (
 
 func db() *mongo.Client {
 	godotenv.Load()
-	clientOptions := options.Client().ApplyURI(
-		"mongodb+srv://user:123@userscluster.whxir.mongodb.net/" +
-			"test?retryWrites=true&w=majority")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
