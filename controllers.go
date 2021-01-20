@@ -50,7 +50,7 @@ func Test(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Second)
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var user User
@@ -70,7 +70,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ReadUser(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Second)
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var user User
@@ -90,7 +90,7 @@ func ReadUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Second)
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var user User
@@ -125,7 +125,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Second)
 	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var user User
